@@ -2,7 +2,8 @@
 
 #include <cstdint>
 #include <list>
-#include <map>
+#include <vector>
+#include <limits>
 
 enum class Side : uint8_t
 {
@@ -14,6 +15,8 @@ using IdType = uint32_t;
 using PriceType = uint16_t;
 using QuantityType = uint16_t;
 
+constexpr PriceType MAX_PRICE = std::numeric_limits<PriceType>::max();
+
 // You CANNOT change this
 struct Order
 {
@@ -23,11 +26,21 @@ struct Order
   Side side;
 };
 
+struct OrderLocation
+{
+  PriceType price;
+  std::list<Order>::iterator it;
+  bool isValid = false;
+};
+
 // You CAN and SHOULD change this
 struct Orderbook
 {
-  std::map<PriceType, std::list<Order>, std::greater<PriceType>> buyOrders;
-  std::map<PriceType, std::list<Order>> sellOrders;
+  std::vector<std::list<Order>> buyOrders;
+  std::vector<std::list<Order>> sellOrders;
+  std::vector<OrderLocation> orderLocations;
+
+  Orderbook() : buyOrders(MAX_PRICE + 1), sellOrders(MAX_PRICE + 1), orderLocations(1e6) {}
 };
 
 extern "C"
@@ -43,7 +56,7 @@ extern "C"
 
   // Returns total resting volume at a given price point
   uint32_t get_volume_at_level(Orderbook &orderbook, Side side,
-                               PriceType quantity);
+                               PriceType price);
 
   // Performance of these do not matter. They are only used to check correctness
   Order lookup_order_by_id(Orderbook &orderbook, IdType order_id);
