@@ -9,7 +9,7 @@
 // Test 0: Simple order lookup
 void test_lookup_order()
 {
-  std::cout << "Test 0: Simple order lookup" << std::endl;
+  // std::cout << "Test 0: Simple order lookup" << std::endl;
   Orderbook ob;
   Order sellOrder{1, 100, 10, Side::SELL};
   // Initially, order with id 1 should not exist.
@@ -26,13 +26,13 @@ void test_lookup_order()
   assert(order_lookup.quantity == 10);
   assert(order_lookup.side == Side::SELL);
 
-  std::cout << "Test 0 passed." << std::endl;
+  // std::cout << "Test 0 passed." << std::endl;
 }
 
 // Test 1: Simple match and modify
 void test_simple_match_and_modify()
 {
-  std::cout << "Test 1: Simple match and modify" << std::endl;
+  // std::cout << "Test 1: Simple match and modify" << std::endl;
   Orderbook ob;
   // Insert a sell order.
   Order sellOrder{1, 100, 10, Side::SELL};
@@ -53,13 +53,13 @@ void test_simple_match_and_modify()
   modify_order_by_id(ob, 1, 0);
   assert(!order_exists(ob, 1));
 
-  std::cout << "Test 1 passed." << std::endl;
+  // std::cout << "Test 1 passed." << std::endl;
 }
 
 // Test 2: Multiple matches across price levels
 void test_multiple_matches()
 {
-  std::cout << "Test 2: Multiple matches across price levels" << std::endl;
+  // std::cout << "Test 2: Multiple matches across price levels" << std::endl;
   Orderbook ob;
   // Insert two sell orders at different prices.
   Order sellOrder1{3, 90, 5, Side::SELL};
@@ -90,13 +90,13 @@ void test_multiple_matches()
   modify_order_by_id(ob, 4, 0);
   assert(!order_exists(ob, 4));
 
-  std::cout << "Test 2 passed." << std::endl;
+  // std::cout << "Test 2 passed." << std::endl;
 }
 
 // Test 3: Sell order matching buy orders
 void test_sell_order_matching_buy()
 {
-  std::cout << "Test 3: Sell order matching buy orders" << std::endl;
+  // std::cout << "Test 3: Sell order matching buy orders" << std::endl;
   Orderbook ob;
   // Insert a buy order.
   Order buyOrder{6, 100, 10, Side::BUY};
@@ -124,13 +124,13 @@ void test_sell_order_matching_buy()
   order_lookup = lookup_order_by_id(ob, 8);
   assert(order_lookup.quantity == 1);
 
-  std::cout << "Test 3 passed." << std::endl;
+  // std::cout << "Test 3 passed." << std::endl;
 }
 
 // Test 4: Full fill buy order exact match
 void test_full_fill_buy_order_exact_match()
 {
-  std::cout << "Test 4: Full fill buy order exact match" << std::endl;
+  // std::cout << "Test 4: Full fill buy order exact match" << std::endl;
   Orderbook ob;
   // Insert a sell order.
   Order sellOrder{20, 100, 10, Side::SELL};
@@ -145,14 +145,14 @@ void test_full_fill_buy_order_exact_match()
   // Verify that the sell order is fully filled and removed.
   assert(!order_exists(ob, 20));
 
-  std::cout << "Test 4 passed." << std::endl;
+  // std::cout << "Test 4 passed." << std::endl;
 }
 
 // Test 5: Partial fill buy order across multiple sell levels
 void test_partial_fill_buy_order_across_multiple_sell_levels()
 {
-  std::cout << "Test 5: Partial fill buy order across multiple sell levels"
-            << std::endl;
+  // std::cout << "Test 5: Partial fill buy order across multiple sell levels"
+  // << std::endl;
   Orderbook ob;
   // Insert two sell orders at different prices.
   Order sellOrder1{22, 95, 4, Side::SELL};
@@ -170,13 +170,13 @@ void test_partial_fill_buy_order_across_multiple_sell_levels()
   Order order_lookup = lookup_order_by_id(ob, 23);
   assert(order_lookup.quantity == 2);
 
-  std::cout << "Test 5 passed." << std::endl;
+  // std::cout << "Test 5 passed." << std::endl;
 }
 
 // Test 6: Modify nonexistent order
 void test_modify_nonexistent_order()
 {
-  std::cout << "Test 6: Modify nonexistent order" << std::endl;
+  // std::cout << "Test 6: Modify nonexistent order" << std::endl;
   Orderbook ob;
   // Insert a buy order.
   Order buyOrder{25, 100, 10, Side::BUY};
@@ -190,13 +190,13 @@ void test_modify_nonexistent_order()
   Order order_lookup = lookup_order_by_id(ob, 25);
   assert(order_lookup.id == 25);
 
-  std::cout << "Test 6 passed." << std::endl;
+  // std::cout << "Test 6 passed." << std::endl;
 }
 
 // Test 7: Partial modification of a resting order
 void test_partial_modification()
 {
-  std::cout << "Test 7: Partial modification of a resting order" << std::endl;
+  // std::cout << "Test 7: Partial modification of a resting order" << std::endl;
   Orderbook ob;
   // Insert a sell order.
   Order sellOrder{26, 100, 10, Side::SELL};
@@ -218,14 +218,14 @@ void test_partial_modification()
   modify_order_by_id(ob, 26, 0);
   assert(!order_exists(ob, 26));
 
-  std::cout << "Test 7 passed." << std::endl;
+  // std::cout << "Test 7 passed." << std::endl;
 }
 
 // Test 8: Partial fill sell order across multiple buy levels
 void test_partial_fill_sell_order_across_multiple_buy_levels()
 {
-  std::cout << "Test 8: Partial fill sell order across multiple buy levels"
-            << std::endl;
+  // std::cout << "Test 8: Partial fill sell order across multiple buy levels"
+  // << std::endl;
   Orderbook ob;
   // Insert two buy orders.
   Order buyOrder1{27, 100, 5, Side::BUY};
@@ -245,13 +245,13 @@ void test_partial_fill_sell_order_across_multiple_buy_levels()
   // Verify that the buy order with id 27 is removed.
   assert(!order_exists(ob, 27));
 
-  std::cout << "Test 8 passed." << std::endl;
+  // std::cout << "Test 8 passed." << std::endl;
 }
 
 // Test 9: No match due to exact price mismatch
 void test_exact_price_mismatch_no_fill()
 {
-  std::cout << "Test 9: No match due to exact price mismatch" << std::endl;
+  // std::cout << "Test 9: No match due to exact price mismatch" << std::endl;
   Orderbook ob;
   // Insert a sell order with a price that is too high.
   Order sellOrder{30, 105, 5, Side::SELL};
@@ -265,14 +265,14 @@ void test_exact_price_mismatch_no_fill()
   assert(order_exists(ob, 30));
   assert(order_exists(ob, 31));
 
-  std::cout << "Test 9 passed." << std::endl;
+  // std::cout << "Test 9 passed." << std::endl;
 }
 
 // Test 10: Multiple partial fills on same price level
 void test_multiple_partial_fills_same_level()
 {
-  std::cout << "Test 10: Multiple partial fills on same price level"
-            << std::endl;
+  // std::cout << "Test 10: Multiple partial fills on same price level"
+  // << std::endl;
   Orderbook ob;
   // Insert two sell orders at the same price.
   Order sellOrder1{32, 100, 4, Side::SELL};
@@ -291,14 +291,14 @@ void test_multiple_partial_fills_same_level()
   Order order_lookup = lookup_order_by_id(ob, 33);
   assert(order_lookup.quantity == 2);
 
-  std::cout << "Test 10 passed." << std::endl;
+  // std::cout << "Test 10 passed." << std::endl;
 }
 
 // Test 11: Order book integrity after multiple operations
 void test_order_book_integrity_after_multiple_operations()
 {
-  std::cout << "Test 11: Order book integrity after multiple operations"
-            << std::endl;
+  // std::cout << "Test 11: Order book integrity after multiple operations"
+  // << std::endl;
   Orderbook ob;
   // Insert a buy order.
   Order buyOrder{35, 100, 10, Side::BUY};
@@ -327,14 +327,14 @@ void test_order_book_integrity_after_multiple_operations()
   match_order(ob, sellOrder3);
   assert(order_exists(ob, 38));
 
-  std::cout << "Test 11 passed." << std::endl;
+  // std::cout << "Test 11 passed." << std::endl;
 }
 
 // Test 12: Multiple orders on the same side maintain FIFO order
 void test_multiple_orders_same_side_ordering()
 {
-  std::cout << "Test 12: Multiple orders on the same side ordering"
-            << std::endl;
+  // std::cout << "Test 12: Multiple orders on the same side ordering"
+  // << std::endl;
   Orderbook ob;
   // Insert two buy orders at the same price.
   Order buyOrder1{39, 100, 5, Side::BUY};
@@ -352,13 +352,13 @@ void test_multiple_orders_same_side_ordering()
   Order order_lookup = lookup_order_by_id(ob, 39);
   assert(order_lookup.quantity == 2);
 
-  std::cout << "Test 12 passed." << std::endl;
+  // std::cout << "Test 12 passed." << std::endl;
 }
 
 // Test 13: Full match sell order exact match
 void test_full_match_sell_order_exact_match()
 {
-  std::cout << "Test 13: Full match sell order exact match" << std::endl;
+  // std::cout << "Test 13: Full match sell order exact match" << std::endl;
   Orderbook ob;
   // Insert a buy order.
   Order buyOrder{42, 100, 10, Side::BUY};
@@ -372,13 +372,13 @@ void test_full_match_sell_order_exact_match()
   // Verify that the buy order is fully filled and removed.
   assert(!order_exists(ob, 42));
 
-  std::cout << "Test 13 passed." << std::endl;
+  // std::cout << "Test 13 passed." << std::endl;
 }
 
 // Test 14: Modify with no change
 void test_modify_no_change()
 {
-  std::cout << "Test 14: Modify with no change" << std::endl;
+  // std::cout << "Test 14: Modify with no change" << std::endl;
   Orderbook ob;
   Order sellOrder{50, 100, 10, Side::SELL};
   match_order(ob, sellOrder);
@@ -387,13 +387,13 @@ void test_modify_no_change()
   assert(order_exists(ob, 50));
   Order order_lookup = lookup_order_by_id(ob, 50);
   assert(order_lookup.quantity == 10);
-  std::cout << "Test 14 passed." << std::endl;
+  // std::cout << "Test 14 passed." << std::endl;
 }
 
 // Test 15: Modify order after partial fill
 void test_modify_after_partial_fill()
 {
-  std::cout << "Test 15: Modify order after partial fill" << std::endl;
+  // std::cout << "Test 15: Modify order after partial fill" << std::endl;
   Orderbook ob;
   Order buyOrder{51, 100, 10, Side::BUY};
   match_order(ob, buyOrder);
@@ -415,13 +415,13 @@ void test_modify_after_partial_fill()
   // The buy order should be fully matched and removed.
   assert(!order_exists(ob, 51));
 
-  std::cout << "Test 15 passed." << std::endl;
+  // std::cout << "Test 15 passed." << std::endl;
 }
 
 // Test 16: Modify preserves FIFO order
 void test_modify_preserves_fifo()
 {
-  std::cout << "Test 16: Modify preserves FIFO order" << std::endl;
+  // std::cout << "Test 16: Modify preserves FIFO order" << std::endl;
   Orderbook ob;
   // Insert two sell orders at the same price.
   Order sellOrderA{54, 100, 5, Side::SELL};
@@ -441,13 +441,13 @@ void test_modify_preserves_fifo()
   Order order_lookup = lookup_order_by_id(ob, 55);
   assert(order_lookup.quantity == 4);
 
-  std::cout << "Test 16 passed." << std::endl;
+  // std::cout << "Test 16 passed." << std::endl;
 }
 
 // Test 17: Multiple modifications on the same order
 void test_multiple_modifications()
 {
-  std::cout << "Test 17: Multiple modifications on the same order" << std::endl;
+  // std::cout << "Test 17: Multiple modifications on the same order" << std::endl;
   Orderbook ob;
   Order buyOrder{57, 100, 12, Side::BUY};
   match_order(ob, buyOrder);
@@ -468,14 +468,14 @@ void test_multiple_modifications()
   // The buy order should now be fully matched and removed.
   assert(!order_exists(ob, 57));
 
-  std::cout << "Test 17 passed." << std::endl;
+  // std::cout << "Test 17 passed." << std::endl;
 }
 
 // Test 18: Modify with quantity=0 removes the order entirely
 void test_modify_with_zero_removes_order()
 {
-  std::cout << "Test 18: Modify with quantity=0 removes the order entirely"
-            << std::endl;
+  // std::cout << "Test 18: Modify with quantity=0 removes the order entirely"
+  // << std::endl;
   Orderbook ob;
   // Insert a buy order.
   Order buyOrder{60, 100, 10, Side::BUY};
@@ -487,25 +487,25 @@ void test_modify_with_zero_removes_order()
   // Verify that the order is removed.
   assert(!order_exists(ob, 60));
 
-  std::cout << "Test 18 passed." << std::endl;
+  // std::cout << "Test 18 passed." << std::endl;
 }
 
 // Test 19: Get volume at level with no orders.
 void test_get_volume_no_orders()
 {
-  std::cout << "Test 19: Get volume at level with no orders" << std::endl;
+  // std::cout << "Test 19: Get volume at level with no orders" << std::endl;
   Orderbook ob;
   uint32_t volume_buy = get_volume_at_level(ob, Side::BUY, 100);
   uint32_t volume_sell = get_volume_at_level(ob, Side::SELL, 100);
   assert(volume_buy == 0);
   assert(volume_sell == 0);
-  std::cout << "Test 19 passed." << std::endl;
+  // std::cout << "Test 19 passed." << std::endl;
 }
 
 // Test 20: Get volume at level with a single order.
 void test_get_volume_single_order()
 {
-  std::cout << "Test 20: Get volume at level with a single order" << std::endl;
+  // std::cout << "Test 20: Get volume at level with a single order" << std::endl;
   Orderbook ob;
   Order sellOrder{100, 100, 10, Side::SELL};
   match_order(ob, sellOrder);
@@ -513,15 +513,15 @@ void test_get_volume_single_order()
   assert(volume_sell == 10);
   uint32_t volume_buy = get_volume_at_level(ob, Side::BUY, 100);
   assert(volume_buy == 0);
-  std::cout << "Test 20 passed." << std::endl;
+  // std::cout << "Test 20 passed." << std::endl;
 }
 
 // Test 21: Get volume at level with multiple orders at the same price.
 void test_get_volume_multiple_orders_same_level()
 {
-  std::cout
-      << "Test 21: Get volume at level with multiple orders at the same price"
-      << std::endl;
+  // std::cout
+  // << "Test 21: Get volume at level with multiple orders at the same price"
+  // << std::endl;
   Orderbook ob;
   Order sellOrder1{101, 100, 5, Side::SELL};
   Order sellOrder2{102, 100, 7, Side::SELL};
@@ -529,15 +529,15 @@ void test_get_volume_multiple_orders_same_level()
   match_order(ob, sellOrder2);
   uint32_t volume_sell = get_volume_at_level(ob, Side::SELL, 100);
   assert(volume_sell == 12); // 5 + 7 = 12
-  std::cout << "Test 21 passed." << std::endl;
+  // std::cout << "Test 21 passed." << std::endl;
 }
 
 // Test 22: Get volume at level with orders at different price levels.
 void test_get_volume_orders_different_levels()
 {
-  std::cout
-      << "Test 22: Get volume at level with orders at different price levels"
-      << std::endl;
+  // std::cout
+  // << "Test 22: Get volume at level with orders at different price levels"
+  // << std::endl;
   Orderbook ob;
   Order buyOrder1{103, 100, 10, Side::BUY};
   Order buyOrder2{104, 101, 5, Side::BUY};
@@ -547,13 +547,13 @@ void test_get_volume_orders_different_levels()
   uint32_t volume_buy_101 = get_volume_at_level(ob, Side::BUY, 101);
   assert(volume_buy_100 == 10);
   assert(volume_buy_101 == 5);
-  std::cout << "Test 22 passed." << std::endl;
+  // std::cout << "Test 22 passed." << std::endl;
 }
 
 // Test 23: Get volume at level after partial fill.
 void test_get_volume_after_partial_fill()
 {
-  std::cout << "Test 23: Get volume at level after partial fill" << std::endl;
+  // std::cout << "Test 23: Get volume at level after partial fill" << std::endl;
   Orderbook ob;
   Order sellOrder{105, 100, 10, Side::SELL};
   match_order(ob, sellOrder);
@@ -563,14 +563,14 @@ void test_get_volume_after_partial_fill()
   // The sell order should now have 6 remaining.
   uint32_t volume_sell = get_volume_at_level(ob, Side::SELL, 100);
   assert(volume_sell == 6);
-  std::cout << "Test 23 passed." << std::endl;
+  // std::cout << "Test 23 passed." << std::endl;
 }
 
 // Test 24: Get volume at level after order cancellation.
 void test_get_volume_after_cancellation()
 {
-  std::cout << "Test 24: Get volume at level after order cancellation"
-            << std::endl;
+  // std::cout << "Test 24: Get volume at level after order cancellation"
+  // << std::endl;
   Orderbook ob;
   Order buyOrder{107, 100, 10, Side::BUY};
   match_order(ob, buyOrder);
@@ -580,15 +580,15 @@ void test_get_volume_after_cancellation()
   modify_order_by_id(ob, 107, 0);
   volume_buy = get_volume_at_level(ob, Side::BUY, 100);
   assert(volume_buy == 0);
-  std::cout << "Test 24 passed." << std::endl;
+  // std::cout << "Test 24 passed." << std::endl;
 }
 
 // Test 25: Complex scenario with multiple SELL orders and modifications.
 void test_get_volume_complex1()
 {
-  std::cout
-      << "Test 25: Complex scenario with multiple SELL orders and modifications"
-      << std::endl;
+  // std::cout
+  // << "Test 25: Complex scenario with multiple SELL orders and modifications"
+  // << std::endl;
   Orderbook ob;
   // Insert SELL orders at price levels 100 and 101.
   Order sellOrder1{200, 100, 10, Side::SELL};
@@ -605,16 +605,16 @@ void test_get_volume_complex1()
   // Check volume at level 101 for SELL.
   uint32_t volume_101 = get_volume_at_level(ob, Side::SELL, 101);
   assert(volume_101 == 15);
-  std::cout << "Test 25 passed." << std::endl;
+  // std::cout << "Test 25 passed." << std::endl;
 }
 
 // Test 26: Complex scenario with interleaved BUY order insertions, matches, and
 // modifications.
 void test_get_volume_complex2()
 {
-  std::cout << "Test 26: Complex scenario with interleaved BUY order "
-               "insertions, matches, and modifications"
-            << std::endl;
+  // std::cout << "Test 26: Complex scenario with interleaved BUY order "
+  // "insertions, matches, and modifications"
+  // << std::endl;
   Orderbook ob;
   // Insert BUY orders at price 100.
   Order buyOrder1{300, 100, 20, Side::BUY};
@@ -636,15 +636,15 @@ void test_get_volume_complex2()
   // Now total volume is 5 (buyOrder1) + 5 (buyOrder2) = 10.
   volume_buy = get_volume_at_level(ob, Side::BUY, 100);
   assert(volume_buy == 10);
-  std::cout << "Test 26 passed." << std::endl;
+  // std::cout << "Test 26 passed." << std::endl;
 }
 
 // Test 27: Complex scenario with cancellations and new insertions on SELL side.
 void test_get_volume_complex3()
 {
-  std::cout << "Test 27: Complex scenario with cancellations and new "
-               "insertions on SELL side"
-            << std::endl;
+  // std::cout << "Test 27: Complex scenario with cancellations and new "
+  // "insertions on SELL side"
+  // << std::endl;
   Orderbook ob;
   // Insert SELL orders at price 100.
   Order sellOrder1{400, 100, 30, Side::SELL};
@@ -672,15 +672,15 @@ void test_get_volume_complex3()
   modify_order_by_id(ob, 401, 10);
   volume_sell = get_volume_at_level(ob, Side::SELL, 100);
   assert(volume_sell == 25); // 10 (modified) + 15 = 25.
-  std::cout << "Test 27 passed." << std::endl;
+  // std::cout << "Test 27 passed." << std::endl;
 }
 
 // Test 28: Comprehensive scenario encompassing both BUY and SELL sides.
 void test_get_volume_all_encompassing()
 {
-  std::cout
-      << "Test 28: Comprehensive scenario encompassing both BUY and SELL sides"
-      << std::endl;
+  // std::cout
+  // << "Test 28: Comprehensive scenario encompassing both BUY and SELL sides"
+  // << std::endl;
   Orderbook ob;
   // Insert BUY orders.
   Order buyOrder1{500, 100, 20, Side::BUY};
@@ -741,40 +741,43 @@ void test_get_volume_all_encompassing()
   assert(volume_sell_102 == 15);
   assert(volume_sell_101 == 0);
 
-  std::cout << "Test 28 passed." << std::endl;
+  // std::cout << "Test 28 passed." << std::endl;
 }
 
 int main()
 {
-  test_lookup_order();
-  test_simple_match_and_modify();
-  test_multiple_matches();
-  test_sell_order_matching_buy();
-  test_full_fill_buy_order_exact_match();
-  test_partial_fill_buy_order_across_multiple_sell_levels();
-  test_modify_nonexistent_order();
-  test_partial_modification();
-  test_partial_fill_sell_order_across_multiple_buy_levels();
-  test_exact_price_mismatch_no_fill();
-  test_multiple_partial_fills_same_level();
-  test_order_book_integrity_after_multiple_operations();
-  test_multiple_orders_same_side_ordering();
-  test_full_match_sell_order_exact_match();
-  test_modify_no_change();
-  test_modify_after_partial_fill();
-  test_modify_preserves_fifo();
-  test_multiple_modifications();
-  test_modify_with_zero_removes_order();
-  test_get_volume_no_orders();
-  test_get_volume_single_order();
-  test_get_volume_multiple_orders_same_level();
-  test_get_volume_orders_different_levels();
-  test_get_volume_after_partial_fill();
-  test_get_volume_after_cancellation();
-  test_get_volume_complex1();
-  test_get_volume_complex2();
-  test_get_volume_complex3();
-  test_get_volume_all_encompassing();
+  for (int i = 0; i < 1000; ++i)
+  {
+    test_lookup_order();
+    test_simple_match_and_modify();
+    test_multiple_matches();
+    test_sell_order_matching_buy();
+    test_full_fill_buy_order_exact_match();
+    test_partial_fill_buy_order_across_multiple_sell_levels();
+    test_modify_nonexistent_order();
+    test_partial_modification();
+    test_partial_fill_sell_order_across_multiple_buy_levels();
+    test_exact_price_mismatch_no_fill();
+    test_multiple_partial_fills_same_level();
+    test_order_book_integrity_after_multiple_operations();
+    test_multiple_orders_same_side_ordering();
+    test_full_match_sell_order_exact_match();
+    test_modify_no_change();
+    test_modify_after_partial_fill();
+    test_modify_preserves_fifo();
+    test_multiple_modifications();
+    test_modify_with_zero_removes_order();
+    test_get_volume_no_orders();
+    test_get_volume_single_order();
+    test_get_volume_multiple_orders_same_level();
+    test_get_volume_orders_different_levels();
+    test_get_volume_after_partial_fill();
+    test_get_volume_after_cancellation();
+    test_get_volume_complex1();
+    test_get_volume_complex2();
+    test_get_volume_complex3();
+    test_get_volume_all_encompassing();
+  }
   std::cout << "All tests passed." << std::endl;
   return 0;
 }
