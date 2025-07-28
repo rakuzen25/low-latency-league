@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <list>
+#include <cstddef>
 #include <vector>
 #include <limits>
 
@@ -28,17 +28,21 @@ struct Order
 
 struct OrderLocation
 {
+  Side side;
   PriceType price;
-  std::list<Order>::iterator it;
+  size_t index;
   bool isValid = false;
 };
 
 // You CAN and SHOULD change this
 struct Orderbook
 {
-  std::vector<std::list<Order>> buyOrders;
-  std::vector<std::list<Order>> sellOrders;
+  std::vector<std::vector<Order>> buyOrders;
+  std::vector<std::vector<Order>> sellOrders;
   std::vector<OrderLocation> orderLocations;
+
+  PriceType minSellPrice = MAX_PRICE;
+  PriceType maxBuyPrice = 0;
 
   Orderbook() : buyOrders(MAX_PRICE + 1), sellOrders(MAX_PRICE + 1), orderLocations(1e6) {}
 };

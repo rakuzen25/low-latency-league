@@ -7,6 +7,51 @@
 // It is INTENTIONALLY suboptimal
 // You are encouraged to rewrite as much or as little as you'd like
 
+void remove_order(Orderbook &orderbook, Side side, PriceType price, size_t index)
+{
+  auto &ordersAtPrice = (side == Side::BUY ? orderbook.buyOrders : orderbook.sellOrders)[price];
+
+  orderbook.orderLocations[ordersAtPrice[index].id].isValid = false; // Mark the order as invalid
+
+  if (ordersAtPrice.size() > 1 && index < ordersAtPrice.size() - 1)
+  {
+    // Swap with the last element
+    Order last = ordersAtPrice.back();
+    ordersAtPrice[index] = last;
+    orderbook.orderLocations[last.id].index = index;
+  }
+
+  ordersAtPrice.pop_back(); // Remove the last element
+
+  if (ordersAtPrice.empty())
+  {
+    if (side == Side::SELL && price == orderbook.minSellPrice)
+    {
+      for (PriceType p = price + 1; p < MAX_PRICE; ++p)
+      {
+        if (!orderbook.sellOrders[p].empty())
+        {
+          orderbook.minSellPrice = p;
+          return;
+        }
+      }
+      orderbook.minSellPrice = MAX_PRICE;
+    }
+    else if (side == Side::BUY && price == orderbook.maxBuyPrice)
+    {
+      for (PriceType p = price - 1; p > 0; --p)
+      {
+        if (!orderbook.buyOrders[p].empty())
+        {
+          orderbook.maxBuyPrice = p;
+          return;
+        }
+      }
+      orderbook.maxBuyPrice = 0;
+    }
+  }
+}
+
 uint32_t match_order(Orderbook &orderbook, const Order &incoming)
 {
   uint32_t matchCount = 0;
@@ -15,23 +60,32 @@ uint32_t match_order(Orderbook &orderbook, const Order &incoming)
   if (order.side == Side::BUY)
   {
     // For a BUY, match with sell orders priced at or below the order's price.
-    for (PriceType price = 0; price <= order.price && order.quantity > 0; ++price)
+    for (PriceType price = orderbook.minSellPrice; price <= order.price && order.quantity > 0; ++price)
     {
       auto &ordersAtPrice = orderbook.sellOrders[price];
-      for (auto orderIt = ordersAtPrice.begin(); orderIt != ordersAtPrice.end() && order.quantity > 0;)
-      {
-        QuantityType trade = std::min(order.quantity, orderIt->quantity);
-        order.quantity -= trade;
-        orderIt->quantity -= trade;
-        ++matchCount;
+      if (ordersAtPrice.empty())
+        continue; // No orders at this price, skip
 
-        if (orderIt->quantity == 0)
+      for (size_t i = 0; i < ordersAtPrice.size() && order.quantity > 0;)
+      {
+        Order &resting = ordersAtPrice[i];
+        QuantityType trade = std::min(order.quantity, resting.quantity);
+        if (trade > 0)
         {
-          orderbook.orderLocations[orderIt->id].isValid = false; // Mark the order as invalid
-          orderIt = ordersAtPrice.erase(orderIt);
+          order.quantity -= trade;
+          resting.quantity -= trade;
+          matchCount++;
+        }
+
+        if (resting.quantity == 0)
+        {
+          remove_order(orderbook, Side::SELL, price, i);
         }
         else
-          ++orderIt;
+        {
+          // Move to the next order only if we didn't remove the current one
+          ++i;
+        }
       }
     }
 
@@ -39,41 +93,56 @@ uint32_t match_order(Orderbook &orderbook, const Order &incoming)
     {
       auto &orderList = orderbook.buyOrders[order.price];
       orderList.push_back(order);
-
-      auto it = std::prev(orderList.end()); // Get the iterator to the newly added order
-      orderbook.orderLocations[order.id] = {order.price, it, true};
+      orderbook.orderLocations[order.id] = {order.side, order.price, orderList.size() - 1, true};
+      if (order.price > orderbook.maxBuyPrice)
+      {
+        orderbook.maxBuyPrice = order.price; // Update max buy price if necessary
+      }
     }
   }
   else
   { // Side::SELL
     // For a SELL, match with buy orders priced at or above the order's price.
-    for (PriceType price = MAX_PRICE; price >= order.price && order.quantity > 0; --price)
+    for (PriceType price = orderbook.maxBuyPrice; price >= order.price && order.quantity > 0; --price)
     {
       auto &ordersAtPrice = orderbook.buyOrders[price];
-      for (auto orderIt = ordersAtPrice.begin(); orderIt != ordersAtPrice.end() && order.quantity > 0;)
-      {
-        QuantityType trade = std::min(order.quantity, orderIt->quantity);
-        order.quantity -= trade;
-        orderIt->quantity -= trade;
-        ++matchCount;
+      if (ordersAtPrice.empty())
+        continue; // No orders at this price, skip
 
-        if (orderIt->quantity == 0)
+      for (size_t i = 0; i < ordersAtPrice.size() && order.quantity > 0;)
+      {
+        Order &resting = ordersAtPrice[i];
+        QuantityType trade = std::min(order.quantity, resting.quantity);
+        if (trade > 0)
         {
-          orderbook.orderLocations[orderIt->id].isValid = false; // Mark the order as invalid
-          orderIt = ordersAtPrice.erase(orderIt);
+          order.quantity -= trade;
+          resting.quantity -= trade;
+          matchCount++;
+        }
+
+        if (resting.quantity == 0)
+        {
+          remove_order(orderbook, Side::BUY, price, i);
         }
         else
-          ++orderIt;
+        {
+          // Move to the next order only if we didn't remove the current one
+          ++i;
+        }
       }
+      if (price == 0)
+        break;
     }
 
     if (order.quantity > 0)
     {
       auto &orderList = orderbook.sellOrders[order.price];
       orderList.push_back(order);
-
-      auto it = std::prev(orderList.end()); // Get the iterator to the newly added order
-      orderbook.orderLocations[order.id] = {order.price, it, true};
+      orderbook.orderLocations[order.id] = {order.side, order.price, orderList.size() - 1, true};
+      if (order.price < orderbook.minSellPrice)
+      {
+        orderbook.minSellPrice = order.price; // Update min sell price if necessary
+      }
     }
   }
   return matchCount;
@@ -88,14 +157,12 @@ void modify_order_by_id(Orderbook &orderbook, IdType order_id,
   OrderLocation &loc = orderbook.orderLocations[order_id];
   if (new_quantity == 0)
   {
-    auto &orderList = (loc.it->side == Side::BUY ? orderbook.buyOrders[loc.price] : orderbook.sellOrders[loc.price]);
-    orderList.erase(loc.it);
-    loc.isValid = false; // Mark the order as invalid
+    remove_order(orderbook, loc.side, loc.price, loc.index);
   }
   else
   {
-    // Modify the order's quantity
-    loc.it->quantity = new_quantity;
+    auto &ordersAtPrice = (loc.side == Side::BUY ? orderbook.buyOrders : orderbook.sellOrders)[loc.price];
+    ordersAtPrice[loc.index].quantity = new_quantity;
   }
 }
 
@@ -118,9 +185,12 @@ uint32_t get_volume_at_level(Orderbook &orderbook, Side side,
 Order lookup_order_by_id(Orderbook &orderbook, IdType order_id)
 {
   if (!order_exists(orderbook, order_id))
-    throw std::out_of_range("Order ID out of range or invalid");
+    throw std::runtime_error("Order does not exist");
 
-  return *orderbook.orderLocations[order_id].it;
+  const auto &loc = orderbook.orderLocations[order_id];
+  const auto &ordersAtPrice =
+      (loc.side == Side::BUY ? orderbook.buyOrders : orderbook.sellOrders)[loc.price];
+  return ordersAtPrice[loc.index];
 }
 
 bool order_exists(Orderbook &orderbook, IdType order_id)
